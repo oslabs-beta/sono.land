@@ -6,6 +6,7 @@ import { serve, DenoServer, HTTPOptions,
   from "./imports.ts";
 import { Client } from "./client.ts"
 import { EventHandler } from "./eventhandler.ts"
+import { Packet } from "./packet.ts"
 
   //options would look like {host: , port: }
   //want to feed those options into creating a new server
@@ -16,7 +17,7 @@ export class Server {
   public server: DenoServer | null = null;
   public hostname = 'localhost';
   public clients: {[key: string]: Client} = {};
-  public channelsList: {[key: string]: Client[]} = {'home': []};
+  public channelsList: {[key: string]: Record<string, Client>} = {'home': {}};
   public eventHandler: EventHandler;
 
   constructor(){
@@ -41,12 +42,13 @@ export class Server {
 
   channel(name: string, callback: ()=>void): void {
 
-    this.channelsList[name] = [];
+    this.channelsList[name] = {};
     console.log(this.channelsList)
     callback();
     return;
   }
 
+// Invoked in run method with
   async awaitRequests(server: DenoServer){
     // let i = 0;
     for await(const req of server) {
@@ -63,19 +65,28 @@ export class Server {
         .then(async (socket: WebSocket) => {
           const client = new Client(socket, Object.keys(this.clients).length);
           this.clients[client.id] = client;
-          this.channelsList['home'].push(client);
+          this.channelsList['home'][client.id] = client;
           // console.log('clients', this.clients)
           // console.log('channelslist', this.channelsList)
 
           // const tag = client.id
           // this.clients[tag] = client;
           for await(const message of socket){
-            //handle messages
-            if(!isWebSocketCloseEvent(message) && typeof message === 'string'){
-              this.eventHandler.handle(message, this.channelsList);
+
+            if(isWebSocketCloseEvent(message) || typeof message !== 'string') break;
+            const data: Packet = JSON.parse(message)
+            switch(data.protocol) {
+              case 'message':
+                console.log('case message')
+                this.eventHandler.handleMessage(data, this.channelsList);
+                break;
+              case 'changeChannel':
+                this.channelsList = this.eventHandler.changeChannel(data, client, this.channelsList);
+                console.log('case channel', this.channelsList);
+                break;
+              default:
+                console.log('default hit', data)
             }
-            // EventHandler.handle(message)
-            console.log('socketreq', message);
           }
 
         })

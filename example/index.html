@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  <div id='testing'>working</div>
-  <script src='actualclient.js'></script>
-  <div><button id='button'>ClickMe</button></div>
-  <script>
-    document.getElementById('button').addEventListener('click', () => {
-    socket.send(JSON.stringify({message: 'test', to: 'home'}));
-    console.log('In script tag of index.html')
-    })
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  </head>
+  <body>
+    <div id='testing'>fuck</div>
+    <script src='actualclient.js'></script>
+    <div><button id='button'>ClickMe</button></div>
+    <div><button id='secret'>SecretMe</div>
+    <div><button id='home'>HomeMe</button></div>
+    <script>
+      document.getElementById('button').addEventListener('click', () => {
+      socket.send(JSON.stringify({protocol: 'message', payload: {message: 'test', to: 'home'}}));
+      console.log('In button script tag of index.html')
+      })
+      document.getElementById('secret').addEventListener('click', () => {
+      socket.send(JSON.stringify({protocol: 'changeChannel', payload: {to: 'secret'}}));
+      console.log('In secret script tag of index.html')
+      })
+    </script>
+  </body>
 </html>

@@ -14,11 +14,12 @@ currentroom?
 export class Client {
   public socket: WebSocket;
   public id = 0;
-  public channels = {};
+  public channel: string;
 
   constructor(socket: WebSocket, id: number){
     this.socket = socket;
     this.id = id + 1000;
+    this.channel = 'home';
   }
 
 
