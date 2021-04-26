@@ -7,20 +7,14 @@
     <title>Document</title>
   </head>
   <body>
-    <div id='testing'>fuck</div>
-    <script src='actualclient.js'></script>
-    <div><button id='button'>ClickMe</button></div>
+    <div id='testing'>Sono</div>
+    <div>
+      <input id='input' type='text'></input>
+      <button id='button'>Send Message</button>
+    </div>
     <div><button id='secret'>SecretMe</div>
     <div><button id='home'>HomeMe</button></div>
-    <script>
-      document.getElementById('button').addEventListener('click', () => {
-      socket.send(JSON.stringify({protocol: 'message', payload: {message: 'test', to: 'home'}}));
-      console.log('In button script tag of index.html')
-      })
-      document.getElementById('secret').addEventListener('click', () => {
-      socket.send(JSON.stringify({protocol: 'changeChannel', payload: {to: 'secret'}}));
-      console.log('In secret script tag of index.html')
-      })
-    </script>
+    <ul id='messageBoard'></ul>
+    <script src='actualclient.js'></script>
   </body>
 </html>

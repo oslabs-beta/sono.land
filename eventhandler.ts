@@ -7,16 +7,19 @@ export class EventHandler {
     return;
   }
 
-  handleMessage(packet: Packet, channelsList: {[key: string]: Record<string, Client>}){
+  handleMessage(packet: Packet, client: Client, channelsList: {[key: string]: Record<string, Client>}){
     // console.log('imhere', JSON.parse(message))
-    const { to, message } = packet.payload;
+    const { message } = packet.payload;
     //now that we have the channel, we need to grab the channelsList
     //grab its array of values, run a loop and send message to each client connected
     // console.log(to)
-    // if(channelsList[to]){
-    const ids = Object.keys(channelsList[to])
+    const channelName = client.channel;
+    // console.log(channelName);
+    // console.log(channelsList[channelName]);
+    // if(channelsList[to]){    
+    const ids = Object.keys(channelsList[channelName])
     ids.forEach((id)=>{
-      channelsList[to][id].socket.send(message);
+      channelsList[channelName][id].socket.send(message);
       // console.log('client', client);
     })
     // }

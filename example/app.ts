@@ -8,7 +8,7 @@ server.run(8080);
 
 server.channel('secret', ()=>{return console.log('opened secret channel')})
 
-// server.listen('fuck', () => console.log('hi') )
+
 
 
 //what functionality do we want?

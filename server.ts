@@ -73,12 +73,21 @@ export class Server {
           // this.clients[tag] = client;
           for await(const message of socket){
 
-            if(isWebSocketCloseEvent(message) || typeof message !== 'string') break;
+            if(isWebSocketCloseEvent(message) || typeof message !== 'string'){
+              //remove client from channelsList
+              //and from 
+              delete this.channelsList[client.channel][client.id];
+              delete this.clients[client.id]
+              // console.log('im here', this.channelsList)
+              console.log('im here', this.clients)
+              break;
+            }
+            // console.log('im here', this.channelsList)
             const data: Packet = JSON.parse(message)
             switch(data.protocol) {
               case 'message':
-                console.log('case message')
-                this.eventHandler.handleMessage(data, this.channelsList);
+                console.log('case message', this.clients)
+                this.eventHandler.handleMessage(data, client, this.channelsList);
                 break;
               case 'changeChannel':
                 this.channelsList = this.eventHandler.changeChannel(data, client, this.channelsList);
@@ -88,7 +97,6 @@ export class Server {
                 console.log('default hit', data)
             }
           }
-
         })
         .catch(err => console.log(err, 'err'))
       //within the acceptwebsocket function, it takes an object:req: {
