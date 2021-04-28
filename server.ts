@@ -7,6 +7,8 @@ import { serve, DenoServer, HTTPOptions,
 import { Client } from "./client.ts"
 import { EventHandler } from "./eventhandler.ts"
 import { Packet } from "./packet.ts"
+// import { serveFile } from "https://deno.land/std@0.93.0/http/file_server.ts";
+
 
   //options would look like {host: , port: }
   //want to feed those options into creating a new server
@@ -56,6 +58,18 @@ export class Server {
       // console.log(i)
       // console.log(req)
       // i += 1;
+      // if(req.url === '/'){
+      //   // try{
+      //     const path = `${Deno.cwd()}/assets/index.html`
+      //     const content = await serveFile(req, path);
+      //     req.respond(content);
+      //   // }
+      //   // catch(err){
+      //   //   console.log(err)
+      //   // }
+      //   break;
+        
+      // }
       const { conn, w:bufWriter, r:bufReader, headers } = req;
       // console.log(headers);
       // req.respond({ body: 'hi' });
@@ -83,11 +97,20 @@ export class Server {
               break;
             }
             // console.log('im here', this.channelsList)
+            console.log('im heere', message)
             const data: Packet = JSON.parse(message)
+
+            // if(data.protocol === 'broadcast'){
+            //   this.eventHandler.broadcast(data.protocol, client, this.channelsList)
+            // }
+
             switch(data.protocol) {
               case 'message':
                 console.log('case message', this.clients)
                 this.eventHandler.handleMessage(data, client, this.channelsList);
+                break;
+              case 'broadcast':
+                this.eventHandler.broadcast(data, client, this.channelsList)
                 break;
               case 'changeChannel':
                 this.channelsList = this.eventHandler.changeChannel(data, client, this.channelsList);

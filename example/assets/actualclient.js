@@ -6,38 +6,49 @@ const socket = new WebSocket("ws://localhost:8080");
 
 
 
-socket.onopen(event => {
+socket.onopen = event => {
   console.log("Connected!", event);
-});
+};
 
-socket.onerror(event => {
+socket.onerror = event => {
   console.log('error', event)
-})
+};
 
-socket.onmessage(function (event) {
+socket.onmessage = function (event) {
   console.log("Message!", event);
   //append message to message board
   const messageBoard = document.getElementById('messageBoard');
   const newMessage = document.createElement('li');
   newMessage.innerText = event.data;
   messageBoard.appendChild(newMessage);
-});
+};
 
 document.getElementById('button').addEventListener('click', () => {
   socket.send(JSON.stringify({protocol: 'message', payload: {message: document.getElementById('input').value}}));
   console.log('In button script tag of index.html', document.getElementById('input').value)
-})
+});
 
 document.getElementById('secret').addEventListener('click', () => {
   socket.send(JSON.stringify({protocol: 'changeChannel', payload: {to: 'secret'}}));
   console.log('In secret script tag of index.html')
-})
+});
 
 document.getElementById('home').addEventListener('click', () => {
   socket.send(JSON.stringify({protocol: 'changeChannel', payload: {to: 'home'}}));
   console.log('In home script tag of index.html')
-})
+});
 
+const localVideo = document.querySelector('video');
+let localStream;
+
+navigator.mediaDevices.getUserMedia({video:true})
+  .then(handleUserMedia)
+  .catch(err => console.log(err))
+
+function handleUserMedia(mediaStream){
+  localVideo.srcObject = mediaStream;
+  localStream = mediaStream;
+}
 
 
 // socket.emit('customEvent', )

@@ -79,7 +79,7 @@ remoteVideo.addEventListener('onresize', logResizedVideo);
 
 // Define RTC peer connection behavior.
 
-// Connects with new peer candidate.
+// Connects with new peer candidate. < ------------------------------------------------
 function handleConnection(event) {
   const peerConnection = event.target;
   const iceCandidate = event.candidate;
@@ -232,6 +232,25 @@ function callAction() {
   trace('Created remote peer connection object remotePeerConnection.');
 
   remotePeerConnection.addEventListener('icecandidate', handleConnection);
+  // function handleConnection(event) {
+  //   const peerConnection = event.target;
+  //   const iceCandidate = event.candidate;
+  
+  //   if (iceCandidate) {
+  //     const newIceCandidate = new RTCIceCandidate(iceCandidate);
+  //     const otherPeer = getOtherPeer(peerConnection);
+  
+  //     otherPeer.addIceCandidate(newIceCandidate)
+  //       .then(() => {
+  //         handleConnectionSuccess(peerConnection);
+  //       }).catch((error) => {
+  //         handleConnectionFailure(peerConnection, error);
+  //       });
+  
+  //     trace(`${getPeerName(peerConnection)} ICE candidate:\n` +
+  //           `${event.candidate.candidate}.`);
+  //   }
+  // }
   remotePeerConnection.addEventListener(
     'iceconnectionstatechange', handleConnectionChange);
   remotePeerConnection.addEventListener('addstream', gotRemoteMediaStream);
