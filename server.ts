@@ -68,7 +68,7 @@ export class Server {
       //   //   console.log(err)
       //   // }
       //   break;
-        
+
       // }
       const { conn, w:bufWriter, r:bufReader, headers } = req;
       // console.log(headers);
@@ -89,7 +89,7 @@ export class Server {
 
             if(isWebSocketCloseEvent(message) || typeof message !== 'string'){
               //remove client from channelsList
-              //and from 
+              //and from
               delete this.channelsList[client.channel][client.id];
               delete this.clients[client.id]
               // console.log('im here', this.channelsList)

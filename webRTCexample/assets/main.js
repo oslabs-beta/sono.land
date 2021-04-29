@@ -1,11 +1,11 @@
 // const signaling = new SignalingChannel();
-const signalingChannel = new WebSocket("ws://localhost:3000");
+const signalingChannel = new WebSocket("ws://localhost:3000/ws");
 
 signalingChannel.onopen = event => {
   console.log("Connected!", event);
 };
 
-const constraints = {audio: false, video: true};
+const constraints = {audio: true, video: true};
 const configuration = {iceServers: [{urls: 'stun:stun2.l.google.com:19302'}]};
 
 const pc = new RTCPeerConnection(configuration);
@@ -98,12 +98,15 @@ pc.onconnectionstatechange = (event) => {
   }
 }
 
+const mediastream = new MediaStream();
+
 pc.ontrack = (event) => {
   console.log('track received', event.track)
   // const remoteVideo = document.getElementById('remoteVideo');
   // remoteVideo.srcObject = new MediaStream();
-  const mediastream = new MediaStream();
   mediastream.addTrack(event.track)
+  console.log('im heree', mediastream)
   document.getElementById('remoteVideo').srcObject = mediastream;
+  // document.getElementById('remoteVideo').play();
   // remoteStream.addTrack(event.track, remoteStream);
 };

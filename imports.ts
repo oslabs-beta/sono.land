@@ -1,7 +1,7 @@
 export {
   serve,
   Server as DenoServer,
-  serveTLS,
+  serveTLS, ServerRequest
 } from "https://deno.land/std@0.93.0/http/server.ts";
 
 export type {

@@ -1,8 +1,8 @@
-import { Server } from '../exports.ts'
+import { TestServer } from '../exports.ts'
 
 
 
-const server = new Server();
+const server = new TestServer();
 
 
 server.run(8080);

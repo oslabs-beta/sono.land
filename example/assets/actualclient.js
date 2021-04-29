@@ -1,7 +1,7 @@
 // import{ createSecKey } from "https://deno.land/std@0.94.0/ws/mod.ts";
 
 // Create WebSocket connection.
-const socket = new WebSocket("ws://localhost:8080");
+const socket = new WebSocket("ws://localhost:8080/ws");
 // const socket =new sono("ws://localhost:8080")
 
 
@@ -37,18 +37,3 @@ document.getElementById('home').addEventListener('click', () => {
   socket.send(JSON.stringify({protocol: 'changeChannel', payload: {to: 'home'}}));
   console.log('In home script tag of index.html')
 });
-
-const localVideo = document.querySelector('video');
-let localStream;
-
-navigator.mediaDevices.getUserMedia({video:true})
-  .then(handleUserMedia)
-  .catch(err => console.log(err))
-
-function handleUserMedia(mediaStream){
-  localVideo.srcObject = mediaStream;
-  localStream = mediaStream;
-}
-
-
-// socket.emit('customEvent', )
