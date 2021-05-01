@@ -5,12 +5,47 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WEBRTC</title>
+  <style>
+  body{
+    background-color:black;
+  }
+    #videocontainer {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content:center;
+    }
+    video {
+      height: 600;
+      width: 600;
+    }
+    #buttoncontainer{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: row;
+    }
+    button{
+      width: 150px;
+      height: 40px;
+      background-color:white;
+      color: black;
+      font-size:15px;
+      border-radius: 8px;
+    }
+  </style>
 </head>
 <body>
-  <video playsinline autoplay muted="true" id='localVideo'></video>
-  <video playsinline autoplay id='remoteVideo'></video>
-  <button id='start'>Start My Video</button>
-  <button id='connect'>Connect to Peer</button>
+  <div id='videocontainer'>
+    <video playsinline autoplay muted="true" id='localVideo'></video>
+    <video playsinline autoplay id='remoteVideo'></video>
+  </div>
+  <div id='buttoncontainer'>
+    <button class="btn btn-outline-primary" id='start'>Start My Video</button>
+    <button class="btn btn-outline-primary" id='connect'>Connect to Peer</button>
+  </div>
+
+
 </body>
-<script src="./main.js"></script>
+<script src="./user.js"></script>
 </html>

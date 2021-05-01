@@ -9,12 +9,11 @@ import { EventHandler } from "./eventhandler.ts"
 import { Packet } from "./packet.ts"
 import { serveFile } from "https://deno.land/std@0.93.0/http/file_server.ts";
 
-
   //options would look like {host: , port: }
   //want to feed those options into creating a new server
   //after that, upgrade connection to websocket connection if possible
   //
-export class TestServer {
+export class Sono {
 
   public server: DenoServer | null = null;
   public hostname = 'localhost';

@@ -1,2 +1,2 @@
 export { Server } from './server.ts';
-export { TestServer } from './testServer.ts';
+export { Sono } from './testServer.ts';

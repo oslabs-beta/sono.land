@@ -1,15 +1,18 @@
-import { TestServer } from '../exports.ts'
+import { Sono } from '../exports.ts'
+
+const sono = new Sono();
+sono.run(8080);
+
+sono.channel('secret', () => {
+	return console.log('opened secret channel')
+});
 
 
 
-const server = new TestServer();
-
-
-server.run(8080);
 
 
 
-server.channel('secret', ()=>{return console.log('opened secret channel')})
+
 
 
 

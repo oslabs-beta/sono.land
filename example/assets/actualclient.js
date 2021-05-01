@@ -15,25 +15,30 @@ socket.onerror = event => {
 };
 
 socket.onmessage = function (event) {
-  console.log("Message!", event);
+  console.log("Message!", event.data);
   //append message to message board
   const messageBoard = document.getElementById('messageBoard');
   const newMessage = document.createElement('li');
-  newMessage.innerText = event.data;
+  const username = JSON.parse(event.data).username;
+  const message = JSON.parse(event.data).message;
+  newMessage.innerHTML = `<strong>${username}</strong>: ${message}`;
   messageBoard.appendChild(newMessage);
 };
 
 document.getElementById('button').addEventListener('click', () => {
-  socket.send(JSON.stringify({protocol: 'message', payload: {message: document.getElementById('input').value}}));
+
+  socket.send(JSON.stringify({protocol: 'message', payload: {message: document.getElementById('input').value, username: document.getElementById('usernameInput').value}}));
   console.log('In button script tag of index.html', document.getElementById('input').value)
 });
 
-document.getElementById('secret').addEventListener('click', () => {
+document.getElementById('connectSecret').addEventListener('click', () => {
   socket.send(JSON.stringify({protocol: 'changeChannel', payload: {to: 'secret'}}));
   console.log('In secret script tag of index.html')
+  document.getElementById('currentChannel').innerText = 'Connected to Secret'
 });
 
-document.getElementById('home').addEventListener('click', () => {
+document.getElementById('connectHome').addEventListener('click', () => {
   socket.send(JSON.stringify({protocol: 'changeChannel', payload: {to: 'home'}}));
-  console.log('In home script tag of index.html')
+  console.log('In home script tag of index.html');
+  document.getElementById('currentChannel').innerText = 'Connected to Home'
 });

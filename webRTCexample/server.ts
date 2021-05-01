@@ -1,9 +1,19 @@
 import { Server } from '../exports.ts';
-import { TestServer } from '../exports.ts';
+import { Sono } from '../exports.ts';
 
-const server = new TestServer();
+const sono = new Sono();
 
-server.run(3000);
+sono.run(3000);
+
+
+
+
+
+
+
+
+
+
 
 
 

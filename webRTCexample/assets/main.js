@@ -1,6 +1,10 @@
 // const signaling = new SignalingChannel();
 const signalingChannel = new WebSocket("ws://localhost:3000/ws");
 
+
+
+
+
 signalingChannel.onopen = event => {
   console.log("Connected!", event);
 };
