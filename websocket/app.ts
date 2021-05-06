@@ -1,7 +1,7 @@
 import { Sono } from '../exports.ts'
 
 const sono = new Sono();
-sono.run(8080);
+sono.listen(8080);
 
 sono.channel('secret', () => {
 	return console.log('opened secret channel')

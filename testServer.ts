@@ -1,13 +1,22 @@
-import { serve, DenoServer, HTTPOptions,
-  HTTPSOptions,
-  acceptWebSocket,
-  isWebSocketCloseEvent,
-  WebSocket, ServerRequest }
-  from "./imports.ts";
+// import { serve, DenoServer, HTTPOptions,
+//   HTTPSOptions,
+//   acceptWebSocket,
+//   isWebSocketCloseEvent,
+//   WebSocket, ServerRequest }
+//   from "./imports.ts";
 import { Client } from "./client.ts"
 import { EventHandler } from "./eventhandler.ts"
 import { Packet } from "./packet.ts"
-import { serveFile } from "https://deno.land/std@0.93.0/http/file_server.ts";
+import type { WebSocket } from "https://deno.land/std@0.95.0/ws/mod.ts";
+// import { serveFile } from "https://deno.land/std@0.95.0/http/file_server.ts";
+import type { HTTPOptions } from "https://deno.land/std@0.95.0/http/server.ts";
+
+import { serve, Server as DenoServer, ServerRequest } from "https://deno.land/std@0.95.0/http/server.ts";
+import { serveFile } from "https://deno.land/std@0.95.0/http/file_server.ts";
+import {
+  acceptWebSocket,
+  isWebSocketCloseEvent,
+} from "https://deno.land/std@0.95.0/ws/mod.ts";
 
   //options would look like {host: , port: }
   //want to feed those options into creating a new server
@@ -20,25 +29,25 @@ export class Sono {
   public clients: {[key: string]: Client} = {};
   public channelsList: {[key: string]: Record<string, Client>} = {'home': {}};
   public eventHandler: EventHandler;
+  // public options: HTTPOptions;
 
   constructor(){
     //what goes inside this constructor, what do we want const server to equal
     // this.served;
+
     this.eventHandler = new EventHandler();
     this.handleWs = this.handleWs.bind(this);
+    // this.options = {port}
+
+    // this.server = serve(this.options);
   }
   //function run to start the server and then upgrade
-  run(port: number): DenoServer {
-    //options = just a port number like 8080 object {hostname: 'localhost', port: 8080}
+  // create run method that takes in a port number and the function must return an output where the type is a DenoServer which is a class from http standard library
+  listen(port: number): DenoServer {
+    const options: HTTPOptions = {port}
 
-    const options: HTTPOptions = {hostname: this.hostname, port}
     this.server = serve(options);
-
-    console.log(this.server)
-    this.awaitRequests(this.server);
-
-
-    //within run we need some way to accept the websocket connection: acceptWebSocket
+    this.awaitRequests(this.server)
     return this.server;
   }
 
@@ -50,19 +59,15 @@ export class Sono {
     return;
   }
 
-// Invoked in run method with
-  async awaitRequests(server: DenoServer) {
-    // let i = 0;
-    console.log('this', this)
+  // Invoked in run method with
+  // Function returns undefined as per Promise<void>
+  async awaitRequests(server: DenoServer):Promise<void> {
+    // console.log('hi')
+    // server is listening to requests
     for await(const req of server) {
-
-      console.log("HIHIHIHHIHIHIIHI")
-      // console.log(req, 'req')
-      // console.log(i)
-      console.log(req)
+      // console.log('req coming in', req)
+      // req.respond({body: 'hi'})
       this.handler(req);
-      //   //   console.l`og(err
-      // }
     }
   }
 
@@ -81,8 +86,7 @@ export class Sono {
       .then(this.handleWs)
       .catch(err => console.log(err, 'err'))
     }
-    else if (req.url === "/favicon.ico"){
-
+    else if (req.url === "/favicon.ico") {
     }
     else { // localhost:3000/main.js
       console.log(req.url)
@@ -132,6 +136,9 @@ export class Sono {
           this.channelsList = this.eventHandler.changeChannel(data, client, this.channelsList);
           console.log('case channel', this.channelsList);
           break;
+        case 'directMessage':
+          this.eventHandler.directMessage(data, client, this.clients);
+          break;
         default:
           console.log('default hit', data)
       }
@@ -140,7 +147,8 @@ export class Sono {
 
 }
 
-
+// const bitch = new Sono();
+// bitch.run(3000)
 
 //on client side it would like
 // const server = new Server() <- goes inside constructor

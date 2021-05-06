@@ -12,7 +12,7 @@ socket.onopen = event => {
 
 socket.onerror = event => {
   console.log('error', event)
-};
+};cd
 
 socket.onmessage = function (event) {
   console.log("Message!", event.data);

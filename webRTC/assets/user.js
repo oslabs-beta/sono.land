@@ -14,66 +14,83 @@ class sonoRTC {
 
   constructor(serverConfig, signalingServer, localVideo, remoteVideo, constraints){
     this.configuration = {iceServers: [{urls: serverConfig}]};
-    this.peerconnection = new RTCPeerConnection(this.configuration);
+    this.peerconnection = {};
     this.server = signalingServer;
     this.localVideo = localVideo;
     this.remoteVideo = remoteVideo;
     this.constraints = constraints;
     this.addEventListeners();
+    this.mediaTracks = {};
   }
   addEventListeners(){
     this.server.onopen = event => {
       console.log("Connected BROSKI??!", event);
     };
     this.server.onmessage = async (event) => {
-      const message = JSON.parse(event.data)
-      console.log('offer? INSIDE ONMESSAGE', message.sdp)
+      const data = JSON.parse(event.data)
+      const message = data.message;
+      const from = data.from;
+      // console.log('offer? INSIDE ONMESSAGE', message.sdp)
       if(message.type == 'offer'){
-        this.peerconnection.setRemoteDescription(new RTCSessionDescription(message));
-        this.peerconnection.createAnswer()
+        this.peerconnection[from] = new RTCPeerConnection(this.configuration);
+        this.peerconnection[from].onconnectionstatechange = (event) => {
+          if (this.peerconnection[from].connectionState === 'connected') {
+            // Peers connected!
+            console.log('connected', from)
+          }
+        }
+        this.peerconnection[from].ontrack = (event) => {
+          if(!this.mediaTracks[from]){
+            this.mediaTracks[from] = new MediaStream();
+            let remoteVideo = document.createElement('video')
+            remoteVideo.setAttribute('playsinline', 'true')
+            remoteVideo.setAttribute('autoplay', 'true')
+            remoteVideo.setAttribute('id', from)
+            document.getElementById('videocontainer').appendChild(remoteVideo)
+          }
+          else {
+            remoteVideo = document.getElementById(from)
+          }
+          console.log('track received', event.track)
+          // const remoteVideo = document.getElementById('remoteVideo');
+          // remoteVideo.srcObject = new MediaStream();
+
+          this.mediaTracks[from].addTrack(event.track)
+          console.log('im HEHREHHRERHEHRHE', event.track)
+          remoteVideo.srcObject = this.mediaTracks[from];
+          // document.getElementById('remoteVideo').play();
+          // remoteStream.addTrack(event.track, remoteStream);
+        };
+        this.peerconnection[from].onicecandidate = (event) => {
+          if (event.candidate) {
+            console.log('ASJKFASKLJDLASKJDLA', event.candidate)
+            const message = {'new-ice-candidate': event.candidate}
+            this.server.send(JSON.stringify({protocol: 'broadcast', payload: {message, from}}));
+          }
+        }
+        this.peerconnection[from].setRemoteDescription(new RTCSessionDescription(message));
+        this.peerconnection[from].createAnswer()
         .then(async (answer) => {
-          await this.peerconnection.setLocalDescription(answer);
-          this.server.send(JSON.stringify({protocol: 'broadcast', payload: {message: answer}}));
+          await this.peerconnection[from].setLocalDescription(answer);
+          this.server.send(JSON.stringify({protocol: 'directmessage', payload: {message: answer, to: from}}));
         })
         .catch(err => console.log('err', err))
       }
       //potentailly move one of these somewhere else so only works AFTER 'connect' works
       if(message.type == 'answer'){
         console.log('SDP answer received');
-        await this.peerconnection.setRemoteDescription(new RTCSessionDescription(message));
+        await this.peerconnection[from].setLocalDescription(this.createdOffer);
+        await this.peerconnection[from].setRemoteDescription(new RTCSessionDescription(message));
       }
       if(message['new-ice-candidate']){
-        this.peerconnection.addIceCandidate(message['new-ice-candidate'])
+        this.peerconnection[from].addIceCandidate(message['new-ice-candidate'])
           .catch(err => console.log('err', err))
       }
     }
-    this.peerconnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        console.log('ASJKFASKLJDLASKJDLA', event.candidate)
-        const message = {'new-ice-candidate': event.candidate}
-        this.server.send(JSON.stringify({protocol: 'broadcast', payload: {message: message}}));
-      }
-    }
 
-    this.peerconnection.onconnectionstatechange = (event) => {
-      if (this.peerconnection.connectionState === 'connected') {
-        // Peers connected!
-        console.log('connected')
-      }
-    }
+    // const mediastream = new MediaStream();
 
-    const mediastream = new MediaStream();
 
-    this.peerconnection.ontrack = (event) => {
-      console.log('track received', event.track)
-      // const remoteVideo = document.getElementById('remoteVideo');
-      // remoteVideo.srcObject = new MediaStream();
-      mediastream.addTrack(event.track)
-      console.log('im heree', mediastream)
-      document.getElementById('remoteVideo').srcObject = mediastream;
-      // document.getElementById('remoteVideo').play();
-      // remoteStream.addTrack(event.track, remoteStream);
-    };
 
   }
   startLocalMedia(){
@@ -92,7 +109,7 @@ class sonoRTC {
 
     this.peerconnection.createOffer()
     .then(async (createdOffer) => {
-      await this.peerconnection.setLocalDescription(createdOffer)
+      this.createdOffer = createdOffer;
       this.server.send(JSON.stringify({protocol: 'broadcast', payload: {message: createdOffer}}));
     })
     .catch(err => console.log('err', err))

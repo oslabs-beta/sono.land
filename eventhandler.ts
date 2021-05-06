@@ -12,7 +12,7 @@ export class EventHandler {
     //now that we have the channel, we need to grab the channelsList
     //grab its array of values, run a loop and send message to each client connected
     // console.log(to)
-    const channelName = client.channel;
+     const channelName = client.channel;
     // console.log(channelName);
     // console.log(channelsList[channelName]);
     // if(channelsList[to]){
@@ -50,10 +50,23 @@ export class EventHandler {
     // if(channelsList[to]){
     const ids = Object.keys(channelsList[channelName])
     ids.forEach((id)=>{
-      if(id !== currentClientId.toString()) channelsList[channelName][id].socket.send(JSON.stringify(message));
+      if(id !== currentClientId.toString()) channelsList[channelName][id].socket.send(JSON.stringify({message, from: currentClientId}));
       console.log('broadcasting');
     })
     // }
+  }
+
+  directMessage(packet: Packet, client: Client, clients: {[key: string]: Client}){
+    const { message, to } = packet.payload;
+    const currentClientId = client.id;
+    console.log(clients)
+
+    // Object.values(clients).forEach(client => {
+    //   if(client.id == to){
+    //     client.socket.send(JSON.stringify({message, from: currentClientId}))
+    //   }
+    // })
+
   }
 
 

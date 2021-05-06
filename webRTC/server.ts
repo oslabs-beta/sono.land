@@ -1,9 +1,10 @@
-import { Server } from '../exports.ts';
+// import { Server } from '../exports.ts';
 import { Sono } from '../exports.ts';
+// import { Lucky } from '../exports.ts';
 
 const sono = new Sono();
 
-sono.run(3000);
+sono.listen(3000);
 
 
 
