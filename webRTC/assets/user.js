@@ -21,8 +21,12 @@ class sonoRTC {
     this.constraints = constraints;
     this.addEventListeners();
     this.mediaTracks = {};
+    this.localtracks = [];
+    this.createOffer = this.createOffer.bind(this)
+    this.createdOffer = null;
+
   }
-  addEventListeners(){
+  addEventListeners = () => {
     this.server.onopen = event => {
       console.log("Connected BROSKI??!", event);
     };
@@ -30,9 +34,24 @@ class sonoRTC {
       const data = JSON.parse(event.data)
       const message = data.message;
       const from = data.from;
+      // console.log(message)
+      if(from == 'server'){
+        // console.log(message)
+        this.clients = message;
+        console.log('grabaing message from server')
+        // if(this.createOffer){
+        this.createOffer(this.clients, this.peerconnection, this.createdOffer, this.server);
+        // }
+      }
       // console.log('offer? INSIDE ONMESSAGE', message.sdp)
       if(message.type == 'offer'){
+        console.log('offer received')
         this.peerconnection[from] = new RTCPeerConnection(this.configuration);
+        this.localtracks.forEach(track => {
+          console.log('this.localtracks.foreach track')
+          this.peerconnection[from].addTrack(track, this.mediaStream)
+        })
+
         this.peerconnection[from].onconnectionstatechange = (event) => {
           if (this.peerconnection[from].connectionState === 'connected') {
             // Peers connected!
@@ -99,20 +118,70 @@ class sonoRTC {
       this.localVideo.srcObject = mediaStream;
       for (const track of mediaStream.getTracks()){
         // console.log('track', track)
-        this.peerconnection.addTrack(track, mediaStream);
+        this.localtracks.push(track);
+        this.mediaStream = mediaStream;
       }
     })
     .catch(err => console.log('err: ', err))
   }
 
   startConnection(){
+    this.server.send(JSON.stringify({protocol: 'grab', payload: {message: 'clients'}}));
+  }
+  createOffer(clients, peerconnection, offer, server){
+    console.log('in creating offer')
+    clients.forEach(client => {
+      peerconnection[client] = new RTCPeerConnection(this.configuration);
+      peerconnection[client].onconnectionstatechange = (event) => {
+        if (peerconnection[client].connectionState === 'connected') {
+          // Peers connected!
+          console.log('connected', from)
+        }
+      }
+      peerconnection[client].ontrack = (event) => {
+        if(!this.mediaTracks[from]){
+          this.mediaTracks[from] = new MediaStream();
+          let remoteVideo = document.createElement('video')
+          remoteVideo.setAttribute('playsinline', 'true')
+          remoteVideo.setAttribute('autoplay', 'true')
+          remoteVideo.setAttribute('id', from)
+          document.getElementById('videocontainer').appendChild(remoteVideo)
+        }
+        else {
+          remoteVideo = document.getElementById(from)
+        }
+        console.log('track received', event.track)
+        // const remoteVideo = document.getElementById('remoteVideo');
+        // remoteVideo.srcObject = new MediaStream();
 
-    this.peerconnection.createOffer()
-    .then(async (createdOffer) => {
-      this.createdOffer = createdOffer;
-      this.server.send(JSON.stringify({protocol: 'broadcast', payload: {message: createdOffer}}));
-    })
-    .catch(err => console.log('err', err))
+        this.mediaTracks[from].addTrack(event.track)
+        console.log('im HEHREHHRERHEHRHE', event.track)
+        remoteVideo.srcObject = this.mediaTracks[from];
+        // document.getElementById('remoteVideo').play();
+        // remoteStream.addTrack(event.track, remoteStream);
+      };
+      peerconnection[client].onicecandidate = (event) => {
+        if (event.candidate) {
+          console.log('ASJKFASKLJDLASKJDLA', event.candidate)
+          const message = {'new-ice-candidate': event.candidate}
+          this.server.send(JSON.stringify({protocol: 'broadcast', payload: {message, from}}));
+        }
+      }
+      peerconnection[client].setRemoteDescription(new RTCSessionDescription(message));
+      peerconnection[client].createAnswer()
+      .then(async (answer) => {
+        await peerconnection[client].setLocalDescription(answer);
+        this.server.send(JSON.stringify({protocol: 'directmessage', payload: {message: answer, to: from}}));
+      })
+      .catch(err => console.log('err', err))
+    }
+      peerconnection[client].createOffer()
+        .then((createdOffer) => {
+        offer = createdOffer;
+        server.send(JSON.stringify({protocol: 'directmessage', payload: {message: createdOffer, to: client}}));
+        })
+        .catch(err => console.log('err', err))
+    });
   }
 }
 
@@ -248,3 +317,41 @@ document.getElementById('connect').onclick = () => {
 // //   // document.getElementById('remoteVideo').play();
 // //   // remoteStream.addTrack(event.track, remoteStream);
 // // };
+
+
+class webRTC {
+  constructor(serverConfig, signalingServer, localVideo, remoteVideo, constraints){
+    this.configuration = {iceServers: [{urls: serverConfig}]};
+    this.peerconnection = {};
+    this.server = signalingServer;
+    this.localVideo = localVideo;
+    this.remoteVideo = remoteVideo;
+    this.constraints = constraints;
+    // this.addEventListeners();
+    // this.mediaTracks = {};
+    // this.localtracks = [];
+    // this.createOffer = this.createOffer.bind(this)
+    // this.createdOffer = null;
+  }
+  eventListeners(){
+    this.server.onmessage = () => {
+
+    }
+
+    }
+  }
+  startConnection(){
+    this.server.send(JSON.stringify({protocol: 'grab', payload: {message: 'clients'}}));
+  }
+
+}
+
+
+
+const rtc2 = new webRTC(serverConfig, signalingServer, localVideo, remoteVideo, constraints);
+document.getElementById('start').onclick = () => {
+  rtc2.startLocalMedia();
+};
+document.getElementById('connect').onclick = () => {
+  rtc2.startConnection();
+}

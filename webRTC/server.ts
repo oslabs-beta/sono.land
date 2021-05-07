@@ -1,8 +1,17 @@
 // import { Server } from '../exports.ts';
-import { Sono } from '../exports.ts';
+import { Sono } from '../mod.ts';
 // import { Lucky } from '../exports.ts';
 
+//classic deno server
+//sono
+
+const server = Deno.listen({ port: 8080 });
+console.log(`HTTP webserver running. Access it at: http://localhost:8080/`);
+
+
 const sono = new Sono();
+
+sono.channel('')
 
 sono.listen(3000);
 

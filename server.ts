@@ -1,263 +1,143 @@
-import { serve, DenoServer, HTTPOptions,
-  HTTPSOptions,
-  acceptWebSocket,
-  isWebSocketCloseEvent,
-  WebSocket }
-  from "./imports.ts";
-import { Client } from "./client.ts"
-import { EventHandler } from "./eventhandler.ts"
-import { Packet } from "./packet.ts"
-// import { serveFile } from "https://deno.land/std@0.93.0/http/file_server.ts";
-  //options would look like {host: , port: }
-  //want to feed those options into creating a new server
-  //after that, upgrade connection to websocket connection if possible
-  //
-export class Server {
+import { Client } from "./client.ts";
+import { EventHandler } from "./eventhandler.ts";
+import { Packet } from "./packet.ts";
+import type { WebSocket } from "./deps.ts";
+import type { HTTPOptions } from "./deps.ts";
+import { serve, Server as DenoServer, ServerRequest } from "https://deno.land/std@0.95.0/http/server.ts";
+import { serveFile } from "./deps.ts";
+import { acceptWebSocket, isWebSocketCloseEvent } from "./deps.ts";
+
+/**
+ * Class that handles WebSocket messages.
+ * Uses Client objects and an EventHandler object
+ * to send messages to Clients.
+*/
+
+export class Sono {
   public server: DenoServer | null = null;
   public hostname = 'localhost';
   public clients: {[key: string]: Client} = {};
   public channelsList: {[key: string]: Record<string, Client>} = {'home': {}};
   public eventHandler: EventHandler;
-  constructor(){
-    //what goes inside this constructor, what do we want const server to equal
-    // this.served;
+
+  /**
+   * Constructor creates a new instance of the Event,
+   * binds handleWs to this and returns a Sono instance.
+   */
+  constructor() {
     this.eventHandler = new EventHandler();
+    this.handleWs = this.handleWs.bind(this);
   }
-  //function run to start the server and then upgrade
-  run(port: number): DenoServer {
-    //options = just a port number like 8080 object {hostname: 'localhost', port: 8080}
-    const options: HTTPOptions = {hostname: this.hostname, port}
+
+  /**
+   * Start server listening on passed-in port number.
+   * @param {number} port - Port that Sono.server listens to.
+   */
+  listen(port: number): DenoServer {
+    const options: HTTPOptions = {port};
     this.server = serve(options);
-    console.log(this.server)
     this.awaitRequests(this.server);
-    //within run we need some way to accept the websocket connection: acceptWebSocket
     return this.server;
   }
-  channel(name: string, callback: ()=>void): void {
+
+  /**
+   * Adding a channel to channelsList object
+   * @param { name } - name of channel
+   */
+  channel(name: string, callback: () => void) :void {
     this.channelsList[name] = {};
     console.log(this.channelsList)
     callback();
     return;
   }
-// Invoked in run method with
-  async awaitRequests(server: DenoServer){
-    // let i = 0;
+
+  /**
+   * awaitRequests handles requests to server and returns undefined
+   * @param { DenoServer } - Sono.server from which requests are sent from
+   */
+  async awaitRequests(server: DenoServer):Promise<void> {
+    // iterate over async request objects to server
     for await(const req of server) {
-      // console.log(req, 'req')
-      // console.log(i)
-      // console.log(req)
-      // i += 1;
-      // if(req.url === '/'){
-      //   // try{
-      //     const path = `${Deno.cwd()}/assets/index.html`
-      //     const content = await serveFile(req, path);
-      //     req.respond(content);
-      //   // }
-      //   // catch(err){
-      //   //   console.log(err)
-      //   // }
-      //   break;
+      this.handler(req);
+    }
+  }
 
-
-      // }
+  /**
+   * Handler method handles request to server
+   * and serves files or upgrades connection to websocket
+   * @param { ServerRequest } - request object from a client
+    */
+  async handler(req: ServerRequest) {
+    //serve index html
+    console.log(req, 'request')
+    if (req.method === "GET" && req.url === "/") {
+      const path = `${Deno.cwd()}/webRTC/assets/index.html`
+      const content = await serveFile(req, path);
+      req.respond(content)
+    }
+    // upgrade to websocket connection
+    else if (req.method === "GET" && req.url === "/ws") {
       const { conn, w:bufWriter, r:bufReader, headers } = req;
-      // console.log(headers);
-      // req.respond({ body: 'hi' });
-      // console.log(BufWriter)
-      // console.log(BufWriter)
       acceptWebSocket({conn, bufWriter, bufReader, headers})
-        .then(async (socket: WebSocket) => {
-          const client = new Client(socket, Object.keys(this.clients).length);
-          this.clients[client.id] = client;
-          this.channelsList['home'][client.id] = client;
-          // console.log('clients', this.clients)
-          // console.log('channelslist', this.channelsList)
-          // const tag = client.id
-          // this.clients[tag] = client;
-          for await(const message of socket){
+      .then(this.handleWs)
+      .catch(err => console.log(err, 'err'))
+    }
+    // request to favicon is skipped
+    else if (req.url === "/favicon.ico") {
+      // continue
+    }
+    else {
+      const path = `${Deno.cwd()}/webRTC/assets${req.url}`;
+      const content = await serveFile(req, path);
+      req.respond(content)
+    }
+  }
 
-            if(isWebSocketCloseEvent(message) || typeof message !== 'string'){
-              //remove client from channelsList
-              //and from
-              //and from
-              delete this.channelsList[client.channel][client.id];
-              delete this.clients[client.id]
-              // console.log('im here', this.channelsList)
-              console.log('im here', this.clients)
-              break;
-            }
-            // console.log('im here', this.channelsList)
-            console.log('im heere', message)
-            const data: Packet = JSON.parse(message)
-            // if(data.protocol === 'broadcast'){
-            //   this.eventHandler.broadcast(data.protocol, client, this.channelsList)
-            // }
-            switch(data.protocol) {
-              case 'message':
-                console.log('case message', this.clients)
-                this.eventHandler.handleMessage(data, client, this.channelsList);
-                break;
-              case 'broadcast':
-                this.eventHandler.broadcast(data, client, this.channelsList)
-                break;
-              case 'changeChannel':
-                this.channelsList = this.eventHandler.changeChannel(data, client, this.channelsList);
-                console.log('case channel', this.channelsList);
-                break;
-              default:
-                console.log('default hit', data)
-            }
-          }
-        })
-        .catch(err => console.log(err, 'err'))
-      //within the acceptwebsocket function, it takes an object:req: {
-      //   conn: Deno.Conn;
-      //   bufWriter: BufWriter;
-      //   bufReader: BufReader;
-      //   headers: Headers;
-      // }
+  /**
+   * handleWS method handles a socket connection
+   * Instantiants a new client
+   * Events of socket are looped thru and dealt with accordingly
+   * @param { WebSocket } - WebSocket connection from a client
+   */
+  async handleWs (socket: WebSocket):Promise<void> {
+    // create new client, add to clients object, add client to home channel
+    console.log(socket, 'im here')
+    const client = new Client(socket, Object.keys(this.clients).length);
+    this.clients[client.id] = client;
+    this.channelsList['home'][client.id] = client;
+
+    for await(const message of socket){
+      // if client sends close websocket event, delete client
+      if (isWebSocketCloseEvent(message) || typeof message !== 'string'){
+        delete this.channelsList[client.channel][client.id];
+        delete this.clients[client.id]
+        break;
+      }
+      const data: Packet = JSON.parse(message)
+      // const grab = data.payload.message;
+
+      // depending on data.protocol, invoke an eventHandler method
+      switch(data.protocol) {
+        case 'message':
+          console.log('case message', this.clients)
+          this.eventHandler.handleMessage(data, client, this.channelsList);
+          break;
+        case 'broadcast':
+          this.eventHandler.broadcast(data, client, this.channelsList)
+          break;
+        case 'changeChannel':
+          this.channelsList = this.eventHandler.changeChannel(data, client, this.channelsList);
+          console.log('case channel', this.channelsList);
+          break;
+        case 'directmessage':
+          this.eventHandler.directMessage(data, client, this.clients);
+          break;
+        case 'grab':
+          this.eventHandler.grab(data, client, this.clients);
+          break;
+        default:
+          console.log('default hit', data)
+      }
     }
   }
 }
-//on client side it would like
-// const server = new Server() <- goes inside constructor
-
-
-// import { serve, DenoServer, HTTPOptions,
-//   HTTPSOptions,
-//   acceptWebSocket,
-//   isWebSocketCloseEvent,
-//   WebSocket }
-//   from "./imports.ts";
-// import { Client } from "./client.ts"
-// import { EventHandler } from "./eventhandler.ts"
-// import { Packet } from "./packet.ts"
-// // import { serveFile } from "https://deno.land/std@0.93.0/http/file_server.ts";
-
-
-//   //options would look like {host: , port: }
-//   //want to feed those options into creating a new server
-//   //after that, upgrade connection to websocket connection if possible
-//   //
-// export class Server {
-
-//   public server: DenoServer | null = null;
-//   public hostname = 'localhost';
-//   public clients: {[key: string]: Client} = {};
-//   public channelsList: {[key: string]: Record<string, Client>} = {'home': {}};
-//   public eventHandler: EventHandler;
-
-//   constructor(){
-//     //what goes inside this constructor, what do we want const server to equal
-//     // this.served;
-//     this.eventHandler = new EventHandler();
-//   }
-//   //function run to start the server and then upgrade
-//   run(port: number): DenoServer {
-//     //options = just a port number like 8080 object {hostname: 'localhost', port: 8080}
-
-//     const options: HTTPOptions = {hostname: this.hostname, port}
-//     this.server = serve(options);
-
-//     console.log(this.server)
-//     this.awaitRequests(this.server);
-
-
-//     //within run we need some way to accept the websocket connection: acceptWebSocket
-//     return this.server;
-//   }
-
-//   channel(name: string, callback: ()=>void): void {
-
-//     this.channelsList[name] = {};
-//     console.log(this.channelsList)
-//     callback();
-//     return;
-//   }
-
-// // Invoked in run method with
-//   async awaitRequests(server: DenoServer){
-//     // let i = 0;
-//     for await(const req of server) {
-//       // console.log(req, 'req')
-//       // console.log(i)
-//       // console.log(req)
-//       // i += 1;
-//       // if(req.url === '/'){
-//       //   // try{
-//       //     const path = `${Deno.cwd()}/assets/index.html`
-//       //     const content = await serveFile(req, path);
-//       //     req.respond(content);
-//       //   // }
-//       //   // catch(err){
-//       //   //   console.log(err)
-//       //   // }
-//       //   break;
-
-//       // }
-//       const { conn, w:bufWriter, r:bufReader, headers } = req;
-//       // console.log(headers);
-//       // req.respond({ body: 'hi' });
-//       // console.log(BufWriter)
-//       // console.log(BufWriter)
-//       acceptWebSocket({conn, bufWriter, bufReader, headers})
-//         .then(async (socket: WebSocket) => {
-//           const client = new Client(socket, Object.keys(this.clients).length);
-//           this.clients[client.id] = client;
-//           this.channelsList['home'][client.id] = client;
-//           // console.log('clients', this.clients)
-//           // console.log('channelslist', this.channelsList)
-
-//           // const tag = client.id
-//           // this.clients[tag] = client;
-//           for await(const message of socket){
-
-//             if(isWebSocketCloseEvent(message) || typeof message !== 'string'){
-//               //remove client from channelsList
-//               //and from
-//               delete this.channelsList[client.channel][client.id];
-//               delete this.clients[client.id]
-//               // console.log('im here', this.channelsList)
-//               console.log('im here', this.clients)
-//               break;
-//             }
-//             // console.log('im here', this.channelsList)
-//             console.log('im heere', message)
-//             const data: Packet = JSON.parse(message)
-
-//             // if(data.protocol === 'broadcast'){
-//             //   this.eventHandler.broadcast(data.protocol, client, this.channelsList)
-//             // }
-
-//             switch(data.protocol) {
-//               case 'message':
-//                 console.log('case message', this.clients)
-//                 this.eventHandler.handleMessage(data, client, this.channelsList);
-//                 break;
-//               case 'broadcast':
-//                 this.eventHandler.broadcast(data, client, this.channelsList)
-//                 break;
-//               case 'changeChannel':
-//                 this.channelsList = this.eventHandler.changeChannel(data, client, this.channelsList);
-//                 console.log('case channel', this.channelsList);
-//                 break;
-//               default:
-//                 console.log('default hit', data)
-//             }
-//           }
-//         })
-//         .catch(err => console.log(err, 'err'))
-//       //within the acceptwebsocket function, it takes an object:req: {
-//       //   conn: Deno.Conn;
-//       //   bufWriter: BufWriter;
-//       //   bufReader: BufReader;
-//       //   headers: Headers;
-//       // }
-//     }
-//   }
-// }
-
-
-
-// //on client side it would like
-// // const server = new Server() <- goes inside constructor
