@@ -16,11 +16,30 @@ export class EventHandler {
    */
   handleMessage(packet: Packet, client: Client, channelsList: {[key: string]: Record<string, Client>}){
     const { message, username } = packet.payload;
+
     const channelName = client.channel;
     const ids = Object.keys(channelsList[channelName])
-    ids.forEach((id)=>{
-      channelsList[channelName][id].socket.send(JSON.stringify({username, message}));
-    })
+
+    if(packet.event !== undefined){
+      console.log('in here', packet.event)
+      ids.forEach((id)=>{
+        // console.log(id, 'channelName', channelName, 'channelsList', channelsList)
+        channelsList[channelName][id].socket.send(JSON.stringify({
+          protocol: packet.event,
+          username,
+          message,
+        }));
+      })
+    }
+    else {
+      console.log('else statement')
+      ids.forEach((id)=>{
+        channelsList[channelName][id].socket.send(JSON.stringify({
+          username,
+          message,
+        }));
+      })
+    }
   }
 
   /**
