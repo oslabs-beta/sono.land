@@ -11,14 +11,6 @@ export class SonoClient {
     this.validCallbacks = {};
     this.subscribedEvents ={};
 
-    // this.ws.onmessage = (event) => {
-    //   const data = JSON.parse(event.data);
-    //   const eventName = data.protocol;
-    //   const eventNames = Object.keys(this.onCallbacks)
-    //   if(eventName in eventNames){
-    //     onCallbacks[eventName](data);
-    //   }
-    // }
   }
   onconnection(callback){
     this.ws.onopen = callback;

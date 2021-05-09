@@ -119,7 +119,7 @@ export class TestSono {
     const client = new Client(socket, Object.keys(this.clients).length);
     this.clients[client.id] = client;
     this.channelsList['home'][client.id] = client;
-
+    
     for await(const message of socket){
       // if client sends close websocket event, delete client
       if (isWebSocketCloseEvent(message) || typeof message !== 'string'){
