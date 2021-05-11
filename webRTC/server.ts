@@ -1,19 +1,38 @@
-// import { Server } from '../exports.ts';
-import { Sono } from '../mod.ts';
-// import { Lucky } from '../exports.ts';
+import { serve } from "https://deno.land/std@0.95.0/http/server.ts";
+import { serveFile } from "https://deno.land/std@0.95.0/http/file_server.ts";
+import { TestSono } from "../mod.ts"
 
-//classic deno server
-//sono
+const server = serve({ port: 3000 });
+const sono = new TestSono();
 
-const server = Deno.listen({ port: 8080 });
-console.log(`HTTP webserver running. Access it at: http://localhost:8080/`);
+// sono.channel('secret', ()=> {console.log('secret opened')})
 
-
-const sono = new Sono();
-
-sono.channel('')
-
-sono.listen(3000);
+for await (const req of server) {
+  if (req.method === "GET" && req.url === "/") {
+    const path = `${Deno.cwd()}/assets/index.html`
+    const content = await serveFile(req, path);
+    req.respond(content)
+  }
+  else if (req.method === "GET" && req.url === "/ws") {
+    sono.connect(req, () => {
+      sono.emit('new client connected')
+    });
+  }
+  else if (req.method === "GET" && req.url === "/favicon.ico") {
+    // Do nothing in case of favicon request
+  }
+  else if (req.url === "/client_side/sono_client.js") {
+    const path = `${Deno.cwd()}/../client_side/sono_client.js`
+    console.log(path, 'path')
+    const content = await serveFile(req, path);
+    req.respond(content)
+  }
+  else {
+    const path = `${Deno.cwd()}/assets/${req.url}`;
+    const content = await serveFile(req, path);
+    req.respond(content)
+  }
+}
 
 
 

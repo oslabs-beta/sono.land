@@ -1,10 +1,14 @@
 //notes for 5/7:multiple answers (twice from each other client)
 //mesh structure how to get second client to third
 
+import { SonoClient } from "../../client_side/sono_client.js"
+
+
+
 class webRTC {
   constructor(serverConfig, signalingServer, localVideo, remoteVideo, constraints){
     this.configuration = {iceServers: [{urls: serverConfig}]};
-    this.peerconnection = {};
+    this.peerconnection = {}
     this.server = signalingServer;
     this.localVideo = localVideo;
     this.remoteVideo = remoteVideo;
@@ -17,19 +21,22 @@ class webRTC {
   }
   eventListeners(){
     this.server.onopen = event => {
-      console.log("Connected BROSKI??!", event);
+      console.log("WebRTC Connection established!", event);
     };
-    this.server.onmessage = async (event) => {
-      const data = JSON.parse(event.data)
-      const message = data.message;
-      const from = data.from;
-      if(from == 'server'){
-        // console.log(message)
-        this.clients = message;
-        console.log('grabaing message from server')
-        // if(this.createOffer){
-        // }
+    this.server.on('grab', (payload) => {
+      console.log('this.server.on retreiving info')
+      if(payload.type === 'clients'){
+        this.clients = payload.message;
       }
+      else if(payload.type === 'myid'){
+        this.myid = payload.message;
+      }
+    })
+    this.server.on('message', async (payload) => {
+      // const data = JSON.parse(event.data).payload;
+      console.log(payload,'payload line 36')
+      const message = payload.message;
+      const from = payload.from;
       if(message.type == 'offer'){
         console.log('in message.type=offer')
         const notInitiator = new Event('notInitiator')
@@ -44,7 +51,14 @@ class webRTC {
         this.peerconnection[from].createAnswer()
         .then(async (answer) => {
           await this.peerconnection[from].setLocalDescription(answer);
-          this.server.send(JSON.stringify({protocol: 'directmessage', payload: {message: answer, to: from}}));
+          this.server.directmessage(answer, from)
+          // this.server.send(JSON.stringify({
+          //   protocol: 'directmessage',
+          //   payload: {
+          //     message: answer,
+          //     to: from,
+          //   }
+          // }));
         })
         .catch(err => console.log('err', err))
       }
@@ -57,12 +71,13 @@ class webRTC {
         this.peerconnection[from].addIceCandidate(message['new-ice-candidate'])
           .catch(err => console.log('err', err))
       }
-    }
-    this.server.addEventListener('initiator', ()=> {
+    })
+    this.server.on('initiator', ()=> {
+      console.log('initiator this.server.on')
       const isInitiator = true;
       this.createRTCs(isInitiator);
     })
-    this.server.addEventListener('notInitiator', ()=> {
+    this.server.on('notInitiator', ()=> {
       const isInitiator = false;
       console.log('event not initiator');
       this.createRTCs(isInitiator);
@@ -80,12 +95,19 @@ class webRTC {
       }
     })
     .catch(err => console.log('err: ', err))
-    this.server.send(JSON.stringify({protocol: 'grab', payload: {message: 'clients'}}));
+    // this.server.send(JSON.stringify({
+    //   protocol: 'grab',
+    //   event: 'message',
+    //   payload: {
+    //     message: 'clients'
+    //   }}));
+    this.server.grab('clients');
+    this.server.grab('myid');
   }
 
   startConnection(){
-    const initiator = new Event('initiator')
-    this.server.dispatchEvent(initiator);
+    // const initiator = new Event('initiator')
+    this.server.trigger('initiator');
   }
   createRTCs(initiator){
     console.log(this)
@@ -121,16 +143,23 @@ class webRTC {
         // remoteVideo.srcObject = new MediaStream();
 
         this.mediaTracks[client].addTrack(event.track)
-        console.log('im HEHREHHRERHEHRHE', event.track)
+        console.log('event.track', event.track)
         remoteVideo.srcObject = this.mediaTracks[client];
         // document.getElementById('remoteVideo').play();
         // remoteStream.addTrack(event.track, remoteStream);
       };
       this.peerconnection[client].onicecandidate = (event) => {
         if (event.candidate) {
-          console.log('ASJKFASKLJDLASKJDLA', event.candidate)
+          console.log('event.candidate', event.candidate)
           const message = {'new-ice-candidate': event.candidate}
-          this.server.send(JSON.stringify({protocol: 'directmessage', payload: {message, to:client}}));
+          this.server.directmessage(message, client);
+          // this.server.send(JSON.stringify({
+          //   protocol: 'directmessage',
+          //   payload: {
+          //     message,
+          //     to:client
+          //   }
+          // }));
         }
       }
     })
@@ -145,7 +174,8 @@ class webRTC {
         .then(async createdOffer => {
           console.log('inside async createdOffer, inside createOffers')
           await this.peerconnection[client].setLocalDescription(createdOffer)
-          this.server.send(JSON.stringify({protocol: 'broadcast', payload: {message: createdOffer}}));
+          this.server.broadcast(createdOffer);
+          //this.server.send(JSON.stringify({protocol: 'broadcast', payload: {message: createdOffer}}));
         })
     })
   }
@@ -155,7 +185,7 @@ class webRTC {
 
 // let mediaConfig = {audio: true, video: true};
 let serverConfig = 'stun:stun2.l.google.com:19302';
-let signalingServer = new WebSocket("ws://localhost:3000/ws");
+let signalingServer = new SonoClient("ws://localhost:3000/ws");
 const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
 const constraints = {audio: true, video: true};

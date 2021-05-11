@@ -2,8 +2,8 @@ import { Client } from "./client.ts";
 import { EventHandler } from "./eventhandler.ts";
 import { Packet } from "./packet.ts";
 import type { WebSocket } from "./deps.ts";
-import type { HTTPOptions } from "./deps.ts";
-import { serve, Server as DenoServer, ServerRequest } from "https://deno.land/std@0.95.0/http/server.ts";
+import type { HTTPOptions, HTTPSOptions} from "./deps.ts";
+import { serve, Server as DenoServer, serveTLS, ServerRequest } from "https://deno.land/std@0.95.0/http/server.ts";
 import { serveFile } from "./deps.ts";
 import { acceptWebSocket, isWebSocketCloseEvent } from "./deps.ts";
 
@@ -12,7 +12,6 @@ import { acceptWebSocket, isWebSocketCloseEvent } from "./deps.ts";
  * Uses Client objects and an EventHandler object
  * to send messages to Clients.
 */
-
 export class Sono {
   public server: DenoServer | null = null;
   public hostname = 'localhost';
@@ -39,6 +38,7 @@ export class Sono {
     this.awaitRequests(this.server);
     return this.server;
   }
+
 
   /**
    * Adding a channel to channelsList object
@@ -133,7 +133,7 @@ export class Sono {
           this.eventHandler.directMessage(data, client, this.clients);
           break;
         case 'grab':
-          this.eventHandler.grab(data, client, this.clients);
+          this.eventHandler.grab(data, client, this.clients, this.channelsList);
           break;
         default:
           console.log('default hit', data)

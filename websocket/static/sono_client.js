@@ -1,7 +1,3 @@
-// sono_client
-// a client-side library for websockets
-// import type { WebSocket } from "../deps.ts";
-
 export class SonoClient {
   // public ws: WebSocket;
 
@@ -71,22 +67,13 @@ export class SonoClient {
   /**
    * Provides list of clients who are connected to the server
    */ //valid requests'clients','channels'(grabs the client IDs currently connected to the server)('channels' list of open channels)
-  grab(request, event='grab') {
+  grab(request) {
     this.ws.send(JSON.stringify({
       protocol: 'grab',
-      event,
       payload: {
         message: request
       }
     }));
-  }
-
-  trigger(eventName) {
-    // this.ws.addEventListener(eventName, () => {})
-    // if(this.sub)
-    this.subscribedEvents[eventName]();
-    // const event = new Event(eventName)
-    // this.ws.dispatchEvent(event)
   }
 
   // onmessage(callback){
@@ -116,26 +103,3 @@ export class SonoClient {
     }
   }
 }
-
-
-// USER EXAMPLE
-// const sono = new SonoClient('ws://localhost:8080/ws');
-// sono.onconnection(()=>{
-//   // sono.message('hi');
-//   // sono.message('hello', 'hello')
-//   // sono.message('bye', 'bye')
-//   sono.message('client connected')
-//   // sono.broadcast
-// })
-
-// sono.on('message', (msg) => {
-//   console.log('message received:', msg)
-// })
-
-// sono.on('hello', (msg) => {
-//   console.log(msg, 'HELLO EVENT')
-// })
-
-// sono.on('bye', (msg) => {
-//   console.log(msg, 'BYE EVENT')
-// })

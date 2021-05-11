@@ -47,7 +47,7 @@ export class TestSono {
    */
   channel(name: string, callback: () => void) :void {
     this.channelsList[name] = {};
-    // console.log(this.channelsList)
+    console.log('in .channel')
     callback();
     return;
   }
@@ -101,6 +101,9 @@ export class TestSono {
       .catch(err => console.log(err, 'err'))
     callback();
   }
+
+
+
   emit(message: string){
     Object.values(this.clients).forEach(client => {
       client.socket.send(JSON.stringify({message}))
@@ -119,7 +122,7 @@ export class TestSono {
     const client = new Client(socket, Object.keys(this.clients).length);
     this.clients[client.id] = client;
     this.channelsList['home'][client.id] = client;
-    
+
     for await(const message of socket){
       // if client sends close websocket event, delete client
       if (isWebSocketCloseEvent(message) || typeof message !== 'string'){
@@ -148,7 +151,7 @@ export class TestSono {
           this.eventHandler.directMessage(data, client, this.clients);
           break;
         case 'grab':
-          this.eventHandler.grab(data, client, this.clients);
+          this.eventHandler.grab(data, client, this.clients, this.channelsList);
           break;
         default:
           // this.eventHandler

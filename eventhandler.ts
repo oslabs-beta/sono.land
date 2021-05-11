@@ -15,32 +15,36 @@ export class EventHandler {
    * @param { [key: string]: Record<string, Client> } channelsList - Object containing all channels in Sono server
    */
   handleMessage(packet: Packet, client: Client, channelsList: {[key: string]: Record<string, Client>}){
-    const { message, username } = packet.payload;
+    const { message } = packet.payload;
+    const currentClientId = client.id.toString(); //1001
 
     const channelName = client.channel;
     const ids = Object.keys(channelsList[channelName])
 
-    if(packet.event !== undefined){
-      console.log('in here', packet.event)
-      ids.forEach((id)=>{
-        // console.log(id, 'channelName', channelName, 'channelsList', channelsList)
-        channelsList[channelName][id].socket.send(JSON.stringify({
-          protocol: packet.event,
-          username,
+    // if(packet.event !== undefined){
+    //   console.log('in here', packet.event)
+    ids.forEach((id)=>{
+      // console.log(id, 'channelName', channelName, 'channelsList', channelsList)
+      channelsList[channelName][id].socket.send(JSON.stringify({
+        protocol: packet.event,
+        payload: {
           message,
-        }));
-      })
+          from: currentClientId
+        }
+      }));
+    })
+    // }
+    // else {
+      // console.log('else statement')
+      // ids.forEach((id)=>{
+      //   channelsList[channelName][id].socket.send(JSON.stringify({
+      //     protocol: 'message',
+      //     username,
+      //     message,
+      //   }));
+      // })
     }
-    else {
-      console.log('else statement')
-      ids.forEach((id)=>{
-        channelsList[channelName][id].socket.send(JSON.stringify({
-          username,
-          message,
-        }));
-      })
-    }
-  }
+
 
   /**
    * Changes the channel client is in
@@ -50,7 +54,10 @@ export class EventHandler {
    */
   changeChannel(packet: Packet, client: Client, channelsList: {[key: string]: Record<string, Client>}): {[key: string]: Record<string, Client>}{
     const { to } = packet.payload;
+
+
     const channel = client.channel;
+    console.log('to', to, 'channelsList', channelsList, 'channeel', channel)
     delete channelsList[channel][client.id];
     client.channel = to;
     channelsList[to][client.id] = client;
@@ -66,10 +73,16 @@ export class EventHandler {
   broadcast(packet: Packet, client: Client, channelsList: {[key: string]: Record<string, Client>}){
     const { message } = packet.payload;
     const channelName = client.channel; //'home'
-    const currentClientId = client.id; //1001
+    const currentClientId = client.id.toString(); //1001
     const ids = Object.keys(channelsList[channelName]);
     ids.forEach((id)=>{
-      if(id !== currentClientId.toString()) channelsList[channelName][id].socket.send(JSON.stringify({message, from: currentClientId}));
+      if(id !== currentClientId) channelsList[channelName][id].socket.send(JSON.stringify({
+        protocol: packet.event,
+        payload: {
+          message,
+          from: currentClientId
+        },
+      }));
     });
   }
 
@@ -85,7 +98,13 @@ export class EventHandler {
     console.log(clients)
     Object.values(clients).forEach(client => {
       if(client.id.toString() == to.toString()){
-        client.socket.send(JSON.stringify({message, from: currentClientId}))
+        client.socket.send(JSON.stringify({
+          protocol: packet.event,
+          payload: {
+            message,
+            from: currentClientId
+          },
+        }))
       }
     })
   }
@@ -96,15 +115,35 @@ export class EventHandler {
    * @param client
    * @param clients
    */
-  grab(packet: Packet, client: Client, clients: {[key: string]: Client}){
-    const { message } = packet.payload;
+  grab(packet: Packet, client: Client, clients: {[key: string]: Client}, channelsList: {[key: string]: Record<string, Client>}){
+
     const currentClientId = client.id.toString();
     const results: Array<string> = [];
-    Object.keys(clients).forEach(clientId => {
-      if(clientId !== currentClientId){
+
+    const { message } = packet.payload;
+    if(message === 'myid'){
+      results.push(currentClientId)
+    }
+    else if(message === 'clients'){
+      Object.keys(clients).forEach(clientId => {
         results.push(clientId)
+      })
+    }
+    else if (message === 'channels'){
+      Object.keys(channelsList).forEach(channel => {
+        results.push(channel);
+      });
+    }
+    else {
+      results.push('invalid grab request')
+    }
+
+    client.socket.send(JSON.stringify({
+      protocol: packet.event,
+      payload: {
+        message: results,
+        type: message
       }
-    })
-    client.socket.send(JSON.stringify({message: results, from: 'server'}))
+    }))
   }
 }

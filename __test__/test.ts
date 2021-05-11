@@ -28,6 +28,43 @@ Deno.test({
 Deno.test({
   name: "Connect to server from two clients",
   async fn(): Promise<void> {
+    const mock = new WebSocketServer(8080);
+    const connection = on(mock, 'connection');
 
+    const firstClient = new WebSocket(testSono);
+    const secondClient = new Websocket(testSono);
+
+    const firstConnect = on(firstClient, 'open');
+    const secondConnect = on(secondClient, 'open');
+
+    let event = await connection.next();
+    assertNotEquals(event, undefined);
+    event = await connection.next();
+    assertNotEquals(event, undefined);
+
+    await firstConnect.next();
+    await firstClient.close();
+    assertEquals(firstClient.isClosed, true);
+
+    await secondConnect.next();
+    await secondClient.close();
+    assertEquals(secondClient.isClosed, true);
+
+    await mock.close();
+  }
+});
+
+Deno.test({
+  name: "Failed connection",
+  async fn(): Promise<void> {
+    const mock = new WebSocketServer(8080);
+    const testSocket = new WebSocket(testSono);
+    const connection = on(mock, 'connect');
+    await assertThrowsAsync(async (): Promise<void> => {
+      await testSocket.send('hi');
+    }, WebSocketError, 'WebSocket is not open';
+
+    await connection.next();
+    await mock.close();
   }
 });
