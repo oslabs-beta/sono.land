@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css">
+<style>
+  body { font-family: "Courier New"; }
+  #messages_container { height: 350px; }
+  .message {
+    border-bottom: 1px solid #000000;
+    padding: 5px;
+  }
+</style>
+<body>
+  <div class="mx-auto border border-black mt-10 p-2" id="container" style="max-width: 500px">
+  <div class="font-bold bg-black text-white text-center p-3" id="banner">Sono.io Chat</div>
+    <div class="overflow-x-auto" id="messages_container">
+      <ul id="messageBoard"></ul>
+    </div>
+    <div class="flex">
+      <input class="w-1/2 border border-black p-2" id="input" type="text" placeholder="message" />
+    </div>
+    <button class="p-2 text-white bg-black w-full mt-1" id="button">send message</button>
+    <button class="p-2 text-white bg-black w-full mt-1" id="connectSecret">Connect Secret</button>
+    <button class="p-2 text-white bg-black w-full mt-1" id="connectHome">Connect Home</button>
+    <button class="p-2 text-white bg-black w-full mt-1" id="startVideo">Start Video</button>
+    <div id='currentChannel'>Connected to Home</div>
+  </div>
+</body>
+<!-- <script type="module" src="sono_client.js"></script> -->
+<script type="module" src="main.js"></script>
+</html>
