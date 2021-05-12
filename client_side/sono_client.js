@@ -84,7 +84,9 @@ export class SonoClient {
   trigger(eventName) {
     // this.ws.addEventListener(eventName, () => {})
     // if(this.sub)
-    this.subscribedEvents[eventName]();
+    if(this.subscribedEvents[eventName]){
+      this.subscribedEvents[eventName]();
+    }
     // const event = new Event(eventName)
     // this.ws.dispatchEvent(event)
   }
@@ -96,6 +98,7 @@ export class SonoClient {
   //     callback(data);
   //   }
   // }
+  //
   on(eventParam, callback){
     this.subscribedEvents[eventParam] = callback;
     console.log('this.subscribedevents', this.subscribedEvents)
@@ -135,6 +138,10 @@ export class SonoClient {
 // sono.on('hello', (msg) => {
 //   console.log(msg, 'HELLO EVENT')
 // })
+
+
+
+
 
 // sono.on('bye', (msg) => {
 //   console.log(msg, 'BYE EVENT')

@@ -5,7 +5,7 @@ import { TestSono } from "../mod.ts"
 const server = serve({ port: 3000 });
 const sono = new TestSono();
 
-// sono.channel('secret', ()=> {console.log('secret opened')})
+sono.channel('secret', ()=> {console.log('secret opened')})
 
 for await (const req of server) {
   if (req.method === "GET" && req.url === "/") {

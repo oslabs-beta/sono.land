@@ -16,7 +16,7 @@ class webRTC {
     this.eventListeners();
     this.mediaTracks = {};
     this.localtracks = [];
-    // this.createOffer = this.createOffer.bind(this)
+    // fthis.createOffer = this.createOffer.bind(this)
     // this.createdOffer = null;
   }
   eventListeners(){
@@ -39,9 +39,9 @@ class webRTC {
       const from = payload.from;
       if(message.type == 'offer'){
         console.log('in message.type=offer')
-        const notInitiator = new Event('notInitiator')
-        this.server.dispatchEvent(notInitiator);
-
+        // const notInitiator = new Event('notInitiator')
+        this.server.trigger('notInitiator');
+p
         // this.peerconnection[from] = new RTCPeerConnection(this.configuration);
         // this.localtracks.forEach(track => {
         //   console.log('this.localtracks.foreach track')
@@ -64,7 +64,7 @@ class webRTC {
       }
       if(message.type == 'answer'){
         console.log('SDP answer received', from);
-        // await this.peerconnection[from].setLocalDescription(this.createdOffer);
+        // await this.peerconnecti on[from].setLocalDescription(this.createdOffer);
         await this.peerconnection[from].setRemoteDescription(new RTCSessionDescription(message));
       }
       if(message['new-ice-candidate']){

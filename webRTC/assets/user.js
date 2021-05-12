@@ -65,7 +65,7 @@ class sonoRTC {
             remoteVideo.setAttribute('playsinline', 'true')
             remoteVideo.setAttribute('autoplay', 'true')
             remoteVideo.setAttribute('id', from)
-            document.getElementById('videocontainer').appendChild(remoteVideo)
+            document.getElementById('remotevideocontainer').appendChild(remoteVideo)
           }
           else {
             remoteVideo = document.getElementById(from)
@@ -183,7 +183,7 @@ class sonoRTC {
         .catch(err => console.log('err', err))
     });
   }
-}
+
 
 // let mediaConfig = {audio: true, video: true};
 let serverConfig = 'stun:stun2.l.google.com:19302';

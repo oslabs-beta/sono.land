@@ -38,7 +38,6 @@ export class SonoClient {
         message
       },
     }));
-
   }
   /**
    * Send message to all clients including self
@@ -85,7 +84,7 @@ export class SonoClient {
   // }
   on(eventParam, callback){
     this.subscribedEvents[eventParam] = callback;
-    console.log('this.subscribedevents', this.subscribedEvents)
+    // console.log('this.subscribedevents', this.subscribedEvents)
     // this.onCallbacks[eventParam] = callback;
     this.ws.onmessage = (event) => {
       console.log('event.data', event.data)

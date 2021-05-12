@@ -46,7 +46,7 @@ export class Sono {
    */
   channel(name: string, callback: () => void) :void {
     this.channelsList[name] = {};
-    console.log(this.channelsList)
+    // console.log(this.channelsList)
     callback();
     return;
   }
@@ -101,7 +101,7 @@ export class Sono {
    */
   async handleWs (socket: WebSocket):Promise<void> {
     // create new client, add to clients object, add client to home channel
-    console.log(socket, 'im here')
+    // console.log(socket, 'im here')
     const client = new Client(socket, Object.keys(this.clients).length);
     this.clients[client.id] = client;
     this.channelsList['home'][client.id] = client;

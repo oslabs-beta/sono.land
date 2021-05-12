@@ -24,7 +24,7 @@ export class EventHandler {
     // if(packet.event !== undefined){
     //   console.log('in here', packet.event)
     ids.forEach((id)=>{
-      // console.log(id, 'channelName', channelName, 'channelsList', channelsList)
+      // console.log(id, 'chaannelName', channelName, 'channelsList', channelsList)
       channelsList[channelName][id].socket.send(JSON.stringify({
         protocol: packet.event,
         payload: {
@@ -57,7 +57,7 @@ export class EventHandler {
 
 
     const channel = client.channel;
-    console.log('to', to, 'channelsList', channelsList, 'channeel', channel)
+    // console.log('to', to, 'channelsList', channelsList, 'channeel', channel)
     delete channelsList[channel][client.id];
     client.channel = to;
     channelsList[to][client.id] = client;
@@ -76,6 +76,7 @@ export class EventHandler {
     const currentClientId = client.id.toString(); //1001
     const ids = Object.keys(channelsList[channelName]);
     ids.forEach((id)=>{
+      // console.log('broadcasting', id)
       if(id !== currentClientId) channelsList[channelName][id].socket.send(JSON.stringify({
         protocol: packet.event,
         payload: {
@@ -95,7 +96,7 @@ export class EventHandler {
   directMessage(packet: Packet, client: Client, clients: {[key: string]: Client}){
     const { message, to } = packet.payload;
     const currentClientId = client.id;
-    console.log(clients)
+    // console.log(clients)
     Object.values(clients).forEach(client => {
       if(client.id.toString() == to.toString()){
         client.socket.send(JSON.stringify({
@@ -133,6 +134,18 @@ export class EventHandler {
       Object.keys(channelsList).forEach(channel => {
         results.push(channel);
       });
+    }
+    else if (message === 'mychannelclients'){
+      // console.log('channelsList', channelsList)
+      Object.keys(channelsList[client.channel]).forEach(id => {
+        results.push(id)
+      })
+      // Object.keys(channelsList).forEach(channel => {
+      //   results.push(channel);
+      // });
+    }
+    else if (message === 'mychannel'){
+      results.push(client.channel)
     }
     else {
       results.push('invalid grab request')

@@ -6,7 +6,7 @@ sono.onconnection(()=>{
 })
 
 sono.on('message', (payload) => {
-  console.log('message received:', payload);
+  // console.log('message received:', payload);
   const messageBoard = document.getElementById('messageBoard');
   const newMessage = document.createElement('li');
   // const username = JSON.parse(event.data).username;
@@ -57,12 +57,12 @@ document.getElementById('button').addEventListener('click', () => {
 document.getElementById('connectSecret').addEventListener('click', () => {
   sono.changeChannel('secret')
 
-  console.log('In secret script tag of index.html')
+  // console.log('In secret script tag of index.html')
   document.getElementById('currentChannel').innerText = 'Connected to Secret'
 });
 
 document.getElementById('connectHome').addEventListener('click', () => {
   sono.changeChannel('home');
-  console.log('In home script tag of index.html');
+  // console.log('In home script tag of index.html');
   document.getElementById('currentChannel').innerText = 'Connected to Home'
 });
