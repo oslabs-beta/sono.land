@@ -43,8 +43,8 @@ Find the documentation [here.](http://sono.land)
 
 ## Authors
 
-- [Chris Ejercito](https://github.com/chris-paul-ejercito)
-- [David Suh](https://github.com/DavidJinSuh90)
-- [Emily Liu](https://github.com/a-creation)
-- [John Lee](https://github.com/JohnL64)
-- [Vince Vu](https://github.com/vin-vu)
+- Chris Ejercito [GitHub](https://github.com/chris-paul-ejercito) [LinkedIn](https://www.linkedin.com/in/christian-paul-ejercito/)
+- David Suh [GitHub](https://github.com/DavidJinSuh90) [LinkedIn](https://www.linkedin.com/in/DavidJinSuh/)
+- Emily Liu [GitHub](https://github.com/a-creation) [LinkedIn](https://www.linkedin.com/in/eliu00/)
+- John Lee [GitHub](https://github.com/JohnL64) [LinkedIn](https://www.linkedin.com/in/john-lee-294a38211/)
+- Vince Vu [GitHub](https://github.com/vin-vu) [LinkedIn](https://www.linkedin.com/in/vince-vu-64425b1ba/)
