@@ -76,7 +76,7 @@ export class EventHandler {
     const currentClientId = client.id.toString(); //1001
     const ids = Object.keys(channelsList[channelName]);
     ids.forEach((id)=>{
-      // console.log('broadcasting', id)
+      console.log('broadcasting', id, 'channelsList', channelsList)
       if(id !== currentClientId) channelsList[channelName][id].socket.send(JSON.stringify({
         protocol: packet.event,
         payload: {

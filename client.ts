@@ -4,11 +4,12 @@ import { WebSocket } from "./deps.ts";
  */
 export class Client {
   public socket: WebSocket;
-  public id = 0;
+  public id = 1000;
   public channel: string;
-  constructor(socket: WebSocket, id: number){
+  constructor(socket: WebSocket, lastClientId: number){
     this.socket = socket;
-    this.id = id + 1000;
+    this.id = lastClientId + 1;
+    console.log(this.id)
     this.channel = 'home';
   }
 }

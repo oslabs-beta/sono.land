@@ -1,11 +1,9 @@
-import { serve } from "https://deno.land/std@0.95.0/http/server.ts";
-import { serveFile } from "https://deno.land/std@0.95.0/http/file_server.ts";
-import { TestSono } from "../mod.ts"
+import { serve } from "https://deno.land/std@0.96.0/http/server.ts";
+import { serveFile } from "https://deno.land/std@0.96.0/http/file_server.ts";
+import { TestSono as Sono } from "../mod.ts"
 
 const server = serve({ port: 8080 });
-const sono = new TestSono();
-
-sono.channel('secret', ()=> {console.log('secret opened')})
+const sono = new Sono();
 
 for await (const req of server) {
   if (req.method === "GET" && req.url === "/") {

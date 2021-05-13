@@ -88,10 +88,10 @@ export class SonoClient {
     console.log('this.subscribedevents', this.subscribedEvents)
     // this.onCallbacks[eventParam] = callback;
     this.ws.onmessage = (event) => {
-      console.log('event.data', event.data)
+      // console.log('event.data', event.data)
       const payload = JSON.parse(event.data).payload;
       const eventName = JSON.parse(event.data).protocol;
-      console.log('this.subscribedEvents', this.subscribedEvents, 'eventName', eventName, 'payload', payload)
+      // console.log('this.subscribedEvents', this.subscribedEvents, 'eventName', eventName, 'payload', payload)
       if(eventName && this.subscribedEvents[eventName]) this.subscribedEvents[eventName](payload)
       // Object.keys(this.onCallbacks)
       // if(Object.keys(this.subscribedEvents).includes(eventName)){

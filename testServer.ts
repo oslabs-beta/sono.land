@@ -3,7 +3,7 @@ import { EventHandler } from "./eventhandler.ts";
 import { Packet } from "./packet.ts";
 import type { WebSocket } from "./deps.ts";
 import type { HTTPOptions } from "./deps.ts";
-import { serve, Server as DenoServer, ServerRequest } from "https://deno.land/std@0.95.0/http/server.ts";
+import { serve, Server as DenoServer, ServerRequest } from "https://deno.land/std@0.96.0/http/server.ts";
 import { serveFile } from "./deps.ts";
 import { acceptWebSocket, isWebSocketCloseEvent } from "./deps.ts";
 
@@ -19,6 +19,7 @@ export class TestSono {
   public clients: {[key: string]: Client} = {};
   public channelsList: {[key: string]: Record<string, Client>} = {'home': {}};
   public eventHandler: EventHandler;
+  public lastClientId: number = 1000;
 
   /**
    * Constructor creates a new instance of the Event,
@@ -47,7 +48,7 @@ export class TestSono {
    */
   channel(name: string, callback: () => void) :void {
     this.channelsList[name] = {};
-    console.log('in .channel')
+    // console.log('in .channel')
     callback();
     return;
   }
@@ -119,7 +120,8 @@ export class TestSono {
   async handleWs (socket: WebSocket):Promise<void> {
     // create new client, add to clients object, add client to home channel
     // console.log(socket, 'im here')
-    const client = new Client(socket, Object.keys(this.clients).length);
+    const client = new Client(socket, this.lastClientId);
+    this.lastClientId = client.id
     this.clients[client.id] = client;
     this.channelsList['home'][client.id] = client;
 
@@ -145,7 +147,7 @@ export class TestSono {
           break;
         case 'changeChannel':
           this.channelsList = this.eventHandler.changeChannel(data, client, this.channelsList);
-          console.log('case channel', this.channelsList);
+          // console.log('case channel', this.channelsList);
           break;
         case 'directmessage':
           this.eventHandler.directMessage(data, client, this.clients);
@@ -155,7 +157,8 @@ export class TestSono {
           break;
         default:
           // this.eventHandler
-          console.log('default hit', data)
+          // console.log('default hit', data)
+          console.log('default case in testServer');
       }
     }
   }

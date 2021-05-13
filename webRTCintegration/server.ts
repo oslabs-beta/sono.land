@@ -1,5 +1,5 @@
-import { serve } from "https://deno.land/std@0.95.0/http/server.ts";
-import { serveFile } from "https://deno.land/std@0.95.0/http/file_server.ts";
+import { serve } from "https://deno.land/std@0.96.0/http/server.ts";
+import { serveFile } from "https://deno.land/std@0.96.0/http/file_server.ts";
 import { TestSono } from "../mod.ts"
 
 const server = serve({ port: 8080 });
