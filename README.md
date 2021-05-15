@@ -2,25 +2,30 @@
 # sono.io
 
 A real-time communication module for Deno.
+
+![](demogif.gif)
+
 ## Features
 
-- A WebSocket server module for the Deno runtime
-- A Websocket client module for to interface with the sono module
-- A WebRTC module for Deno
+- A WebSocket server module for the Deno runtime that accepts WebSocket connections
+- A Websocket client module for to interface with the sono server-side module with myriad built-in methods for peer-to-peer communication.
+- A WebRTC module for Deno (experimental)
 
+## Documentation
+Find the full documentation of Sono.io [here.](http://sono.land)
 
 ## Usage/Examples
 
 server.ts:
 ```typescript
-  import { Sono } from 'https://deno.land/x/sono@v1.0/mod.ts';
+  import { Sono } from 'https://deno.land/x/sono@v1.1/mod.ts';
 
   const sono = new Sono();
 ```
 
-client.ts:
-```typescript
-  import { SonoClient } from 'https://deno.land/x/sono@v1.0/mod.ts';
+client.js:
+```javascript
+  import { SonoClient } from 'https://deno.land/x/sono@v1.1/src/sonoClient.js';
 
   const sono = new SonoClient('ws://localhost:8080/ws');
 
@@ -35,11 +40,9 @@ Import directly from deno.land / github.
 
 deps.ts:
 ```typescript
-  import { Sono } from 'https://deno.land/x/sono@v1.0/mod.ts';
+  import { Sono } from 'https://deno.land/x/sono@v1.1/mod.ts';
 ```
 
-## Documentation
-Find the documentation [here.](http://sono.land)
 
 ## Authors
 
