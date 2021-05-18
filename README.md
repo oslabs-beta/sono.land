@@ -1,4 +1,4 @@
-
+![alt text](https://i.imgur.com/IYeA9K9.png)
 # sono.io
 
 A real-time communication module for Deno.
