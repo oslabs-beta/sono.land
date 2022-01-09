@@ -1,24 +1,26 @@
-<!-- PROJECT LOGO -->
-<div align="center">
-  <img src="./media/sono-logo.png" alt="sono.land" width="80" height="80">
+<p align="center">
+  <img src="./media/sono-logo.png" alt="sono.land" width="100" height="100">
+</p>
 
-  <h1 align="center" style="border: none">sono.land</h1>
+<h1 align="center">
+  sono.land
+</h1>
 
-  <p align="center">
-    A real-time communication module for Deno
-    <br />
-    <a href="https://sono.land/"><strong>Explore the docs</strong></a>
-    <br />
-    <a href="https://chris-paul-ejercito.medium.com/sono-io-real-time-communication-for-deno-d325a5a29b6f">Medium Article</a>
-    ·
-    <a href="https://deno.land/x/sono@v1.1">Deno Module</a>
-    ·
-    <a href="https://github.com/oslabs-beta/sono.land/issues">Request Feature</a>
-  </p>
-</div>
-<hr>
+<p align="center">
+  A real-time communication module for Deno
+  <br />
+  <a href="https://sono.land/"><strong>Explore the docs</strong></a>
+  <br />
+  <a href="https://chris-paul-ejercito.medium.com/sono-io-real-time-communication-for-deno-d325a5a29b6f">Medium Article</a>
+  ·
+  <a href="https://deno.land/x/sono@v1.1">Deno Module</a>
+  ·
+  <a href="https://github.com/oslabs-beta/sono.land/issues">Request Feature</a>
+</p>
 
-<h1 style="border: none">Features</h1>
+***
+
+# Features
 
 - 🤝 WebRTC for P2P connections
 - 📸 Video and 🎤 Audio implementation
