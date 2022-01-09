@@ -2,7 +2,7 @@
 <div align="center">
   <img src="./media/sono-logo.png" alt="sono.land" width="80" height="80">
 
-  <h2 align="center">sono.land</h2>
+  <h3 align="center">sono.land</h3>
 
   <p align="center">
     A real-time communication module for Deno
@@ -18,10 +18,7 @@
 </div>
 <hr>
 
-<br />
-
 ## Features
-
 - 🤝 WebRTC for P2P connections
 - 📸 Video and 🎤 Audio implementation
 - 👨‍👩‍👧‍👦Exhibit Many to Many WebRTC connectivity utilizing the Mesh system
