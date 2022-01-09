@@ -1,20 +1,52 @@
-![alt text](https://i.imgur.com/IYeA9K9.png)
-# sono.io
+<!-- PROJECT LOGO -->
+<div align="center">
+  <img src="./media/sono-logo.png" alt="sono.land" width="80" height="80">
 
-A real-time communication module for Deno.
+  <h2 align="center">sono.land</h2>
 
-![](demogif.gif)
+  <p align="center">
+    A real-time communication module for Deno
+    <br />
+    <a href="https://sono.land/"><strong>Explore the docs</strong></a>
+    <br />
+    <a href="https://chris-paul-ejercito.medium.com/sono-io-real-time-communication-for-deno-d325a5a29b6f">Medium Article</a>
+    ·
+    <a href="https://deno.land/x/sono@v1.1">Deno Module</a>
+    ·
+    <a href="https://github.com/oslabs-beta/sono.land/issues">Request Feature</a>
+  </p>
+</div>
+<hr>
+
+<br />
 
 ## Features
 
-- A WebSocket server module for the Deno runtime that accepts WebSocket connections
-- A Websocket client module for to interface with the sono server-side module with myriad built-in methods for peer-to-peer communication.
-- A WebRTC module for Deno (experimental)
+- 🤝 WebRTC for P2P connections
+- 📸 Video and 🎤 Audio implementation
+- 👨‍👩‍👧‍👦Exhibit Many to Many WebRTC connectivity utilizing the Mesh system
+- 🔌 WebSocket for clients to server connections
+- 💬 Chatroom demonstration to display WebSocket connections
+- 📺 Multiple channels for different discussions
+- 📣 Broadcast messages to everyone in the channel
+- 📫 Direct message to a single client
+- 📝 Grab a list of all clients in a specified channel
+- 🔥 and much more
 
-## Documentation
-Find the full documentation of Sono.io [here.](http://sono.land)
+<br />
 
-## Usage/Examples
+# Demo
+<div align="center">
+
+  ![test](./media/demogif.gif)
+
+</div>
+<br />
+
+# Documentation
+Find the full documentation of [sono.land](http://sono.land)
+
+## Usage & Examples
 
 server.ts:
 ```typescript
@@ -44,7 +76,7 @@ deps.ts:
 ```
 
 
-## Authors
+# Contact the team!
 
 - Chris Ejercito [GitHub](https://github.com/chris-paul-ejercito) [LinkedIn](https://www.linkedin.com/in/christian-paul-ejercito/)
 - David Suh [GitHub](https://github.com/DavidJinSuh90) [LinkedIn](https://www.linkedin.com/in/DavidJinSuh/)
