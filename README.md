@@ -2,7 +2,7 @@
 <div align="center">
   <img src="./media/sono-logo.png" alt="sono.land" width="80" height="80">
 
-  <h3 align="center">sono.land</h3>
+  <h1 align="center" style="border-bottom: none">sono.land</h1>
 
   <p align="center">
     A real-time communication module for Deno
@@ -18,7 +18,8 @@
 </div>
 <hr>
 
-## Features
+<h1 style="border-bottom: none">Features</h1>
+
 - 🤝 WebRTC for P2P connections
 - 📸 Video and 🎤 Audio implementation
 - 👨‍👩‍👧‍👦Exhibit Many to Many WebRTC connectivity utilizing the Mesh system
@@ -71,7 +72,7 @@ deps.ts:
 ```typescript
   import { Sono } from 'https://deno.land/x/sono@v1.1/mod.ts';
 ```
-
+<br />
 
 # Contact the team!
 
