@@ -1,4 +1,3 @@
-import { WebSocket } from "../deps.ts";
 /**
  * Client class creates each client with unique id, WebSocket, and the channel client is set to
  */
