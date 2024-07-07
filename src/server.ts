@@ -36,10 +36,16 @@ export class Sono {
     return;
   }
 
+  /**
+   * connect method used in Deno.serve
+   * @param req - request from client
+   * @param callback - callback function
+   * @returns { Response }
+   */
   connect(
     req: Request,
     callback: () => void = () => console.log("websocket created")
-  ) {
+  ): Response {
     // @ts-ignore
     const { socket, response }: { socket: WebSocket; response: Response } = Deno.upgradeWebSocket(req);
     this.handleWs(socket);
@@ -47,7 +53,7 @@ export class Sono {
     return response;
   }
 
-  emit(message: string) {
+  emit(message: string): void {
     Object.values(this.clients).forEach((client) => {
       client.socket.send(JSON.stringify({ message }));
     });
