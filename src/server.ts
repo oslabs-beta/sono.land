@@ -2,7 +2,6 @@ import { Client } from "./client.ts";
 import { EventHandler } from "./eventhandler.ts";
 import { Packet } from "./packet.ts";
 
-
 /**
  * Class that handles WebSocket messages.
  * Uses Client objects and an EventHandler object
@@ -26,7 +25,6 @@ export class Sono {
     this.handleWs = this.handleWs.bind(this);
   }
 
-
   /**
    * Adding a channel to channelsList object
    * @param { name } - name of channel
@@ -38,11 +36,13 @@ export class Sono {
     return;
   }
 
-  connect(req: Request, callback: () => void) {
+  connect(
+    req: Request,
+    callback: () => void = () => console.log("websocket created")
+  ) {
     // @ts-ignore
-    const { socket, response }: { socket: WebSocket, response: Response } = Deno.upgradeWebSocket(req);
+    const { socket, response }: { socket: WebSocket; response: Response } = Deno.upgradeWebSocket(req);
     this.handleWs(socket);
-    this.emit("new client connected");
     callback();
     return response;
   }
@@ -75,7 +75,7 @@ export class Sono {
     });
     socket.addEventListener("message", (event) => {
       const message = event.data;
-      console.log(message);
+      // console.log(message);
       const data: Packet = JSON.parse(message);
       // const event = new Event(data.protocol)
       // const grab = data.payload.message;
