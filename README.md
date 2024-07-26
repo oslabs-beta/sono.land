@@ -53,13 +53,17 @@ server.ts:
   import { Sono } from 'https://deno.land/x/sono@v1.1/mod.ts';
 
   const sono = new Sono();
+  Deno.serve(async (req: Request) => {
+      return sono.connect(req);
+  });
+
 ```
 
 client.js:
 ```javascript
   import { SonoClient } from 'https://deno.land/x/sono@v1.1/src/sonoClient.js';
 
-  const sono = new SonoClient('ws://localhost:8080/ws');
+  const sono = new SonoClient('ws://localhost:8000/ws');
 
   sono.on('hello', (event) => {
     console.log(event, 'world')

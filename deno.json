@@ -1,0 +1,5 @@
+{
+    "name": "@sono/core",
+    "version": "1.2.0",
+    "exports": "./mod.ts"
+}
