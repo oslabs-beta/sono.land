@@ -53,7 +53,6 @@ server.ts:
   import { Sono } from 'https://deno.land/x/sono@v1.1/mod.ts';
 
   const sono = new Sono();
-  import { Sono } from "./server.mts";
   Deno.serve(async (req: Request) => {
       return sono.connect(req);
   });
