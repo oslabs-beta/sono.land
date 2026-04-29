@@ -5,10 +5,12 @@ export class Client {
   public socket: WebSocket;
   public id = 1000;
   public channel: string;
+  public isViewer: boolean;
   constructor(socket: WebSocket, lastClientId: number){
     this.socket = socket;
     this.id = lastClientId + 1;
     console.log(this.id)
     this.channel = 'home';
+    this.isViewer = false;
   }
 }

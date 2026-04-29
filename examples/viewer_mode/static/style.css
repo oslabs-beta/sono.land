@@ -1,0 +1,78 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: #1a1a2e;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.header {
+  background: #16213e;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 { font-size: 18px; }
+
+.status-bar {
+  display: flex;
+  gap: 15px;
+  font-size: 13px;
+}
+
+.status-bar span {
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: #0f3460;
+}
+
+.status-bar .live { background: #e94560; }
+
+.main {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 15px;
+  margin-bottom: 80px;
+}
+
+.video-grid video {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  background: #000;
+  border-radius: 8px;
+}
+
+.controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn:hover { transform: scale(1.05); }
+
+.btn-cam { background: #e94560; color: #fff; }
+.btn-cam.active { background: #28a745; }
+.btn-cam:disabled { background: #555; cursor: not-allowed; transform: none; }

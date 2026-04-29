@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viewer Mode - sono.land</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="header">
+    <h1>sono.land</h1>
+    <div class="status-bar">
+      <span id="myId">Connecting...</span>
+      <span id="connStatus" class="live">LIVE</span>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="video-grid" id="videoGrid"></div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-cam" id="toggleCam">Enable Camera</button>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

@@ -72,7 +72,30 @@ export class Sono {
     this.lastClientId = client.id;
     this.clients[client.id] = client;
     this.channelsList["home"][client.id] = client;
+
+    // Notify existing clients in the channel
+    const channelName = client.channel;
+    const channelClients = this.channelsList[channelName];
+    Object.values(channelClients).forEach((c) => {
+      if (c.id !== client.id && c.socket.readyState === WebSocket.OPEN) {
+        c.socket.send(JSON.stringify({
+          protocol: 'clientjoining',
+          payload: { from: client.id.toString() }
+        }));
+      }
+    });
+
     socket.addEventListener("close", () => {
+      // Notify remaining clients
+      const ch = this.channelsList[client.channel];
+      Object.values(ch).forEach((c) => {
+        if (c.id !== client.id && c.socket.readyState === WebSocket.OPEN) {
+          c.socket.send(JSON.stringify({
+            protocol: 'clientleaving',
+            payload: { from: client.id.toString() }
+          }));
+        }
+      });
       delete this.channelsList[client.channel][client.id];
       delete this.clients[client.id];
     });
@@ -121,6 +144,9 @@ export class Sono {
             this.clients,
             this.channelsList
           );
+          break;
+        case "setViewerRole":
+          this.eventHandler.setViewerRole(data, client, this.channelsList);
           break;
         default:
           // this.eventHandler

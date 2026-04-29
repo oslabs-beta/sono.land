@@ -85,6 +85,15 @@ export class SonoClient {
 
   }
 
+  setViewerRole(isViewer) {
+    this.ws.send(JSON.stringify({
+      protocol: 'setViewerRole',
+      payload: {
+        isViewer: isViewer
+      }
+    }));
+  }
+
 
   on(eventParam, callback){
     this.subscribedEvents[eventParam] = callback;
